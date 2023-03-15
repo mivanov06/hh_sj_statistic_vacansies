@@ -11,8 +11,7 @@ if __name__ == "__main__":
     languages = ['Python', 'Java', 'C++', 'C#', 'C',
                  'PHP', 'Go', 'Ruby', 'JavaScript', 'TypeScript']
     sj_key = os.getenv('SJ_SECRET_KEY')
-    hh_salary_ranges = list()
-    sj_salary_ranges = list()
+    hh_salary_ranges, sj_salary_ranges = [], []
     table_lines = [
         ['Язык программирования', 'Вакансий найдено', 'Вакансий обработано',
          'Средняя зарплата']
@@ -20,5 +19,5 @@ if __name__ == "__main__":
     for language in languages:
         hh_salary_ranges.append(hh_get_vacance_statistic(language))
         sj_salary_ranges.append(sj_get_vacance_statistic(language, sj_key))
-    print_table(hh_salary_ranges, table_lines, 'Статистика HeadHunter')
-    print_table(sj_salary_ranges, table_lines, 'Статистика SuperJob')
+    print_table(hh_salary_ranges, table_lines.copy(), 'Статистика HeadHunter')
+    print_table(sj_salary_ranges, table_lines.copy(), 'Статистика SuperJob')
