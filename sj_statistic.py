@@ -1,16 +1,8 @@
 from itertools import count
-from typing import Dict
-
 import requests
-from progress.bar import IncrementalBar as Bar
 from requests import exceptions
 
 from job_statistic_func import predict_rub_salary
-
-
-def sj_get_vacancies_count(text: str, secret_key: str) -> int:
-    response = sj_get_vacancies(text, secret_key, per_page=1)
-    return response['total']
 
 
 def sj_get_vacancies(text: str, secret_key: str, page: int = 0, per_page: int = 100, period: int = 30) -> list:
@@ -35,7 +27,7 @@ def sj_predict_rub_salary(vacance) -> int:
         return predict_rub_salary(vacance['payment_from'], vacance['payment_to'])
 
 
-def sj_get_vacancy_statistic(language: str, secret_key: str):  # dict[str, int | str]
+def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | str]:
     vacancy_statistic = {
         'language': language,
         'vacancies_processed': 0,
