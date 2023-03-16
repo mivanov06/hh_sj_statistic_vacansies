@@ -35,7 +35,6 @@ def sj_predict_rub_salary(vacance) -> int:
 
 
 def sj_get_vacance_statistic(language: str, secret_key: str) -> dict[str, int | str]:
-    global vacancies
     vacancies_found = sj_get_vacancies_count(language, secret_key)
     pages_count = (vacancies_found // 100) + 1
     bar = Bar(f'for SJ [{language}]: Counting in progress', max=vacancies_found)

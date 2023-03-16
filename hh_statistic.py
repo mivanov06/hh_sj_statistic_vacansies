@@ -31,7 +31,6 @@ def hh_predict_rub_salary(vacance):
 
 
 def hh_get_vacance_statistic(language: str):
-    global vacancies
     vacancies_found = hh_get_vacancies_count(language)
     pages_count = (vacancies_found // 100) + 1
     if pages_count > 19:
