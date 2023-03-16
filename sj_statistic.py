@@ -1,3 +1,4 @@
+from itertools import count
 from typing import Dict
 
 import requests
@@ -34,29 +35,28 @@ def sj_predict_rub_salary(vacance) -> int:
         return predict_rub_salary(vacance['payment_from'], vacance['payment_to'])
 
 
-def sj_get_vacance_statistic(language: str, secret_key: str) -> dict[str, int | str]:
-    vacancies_found = sj_get_vacancies_count(language, secret_key)
-    pages_count = (vacancies_found // 100) + 1
-    bar = Bar(f'for SJ [{language}]: Counting in progress', max=vacancies_found)
-    vacance_statistic = {
+def sj_get_vacancy_statistic(language: str, secret_key: str):  # dict[str, int | str]
+    vacancy_statistic = {
         'language': language,
-        'vacancies_found': vacancies_found,
         'vacancies_processed': 0,
         'average_salary': 0
     }
-    for page in range(pages_count + 1):
+    for page in count(0):
         try:
-            vacancies = sj_get_vacancies(language, secret_key, page, 100)['objects']
+            vacancies_page = sj_get_vacancies(language, secret_key, page, 100)
         except exceptions.HTTPError:
             print(f' Страница {page} не найдена')
-        for vacance in vacancies:
-            rub_salary = sj_predict_rub_salary(vacance)
+            continue
+        if vacancies_page['total']:
+            vacancy_statistic['vacancies_found'] = vacancies_page['total']
+        if page >= (vacancy_statistic['vacancies_found'] // 100):
+            break
+        vacancies = vacancies_page['objects']
+        for vacancy in vacancies:
+            rub_salary = sj_predict_rub_salary(vacancy)
             if rub_salary:
-                vacance_statistic['average_salary'] += rub_salary
-                vacance_statistic['vacancies_processed'] += 1
-            bar.next()
-    bar.finish()
-    if vacance_statistic['vacancies_processed'] != 0:
-        vacance_statistic['average_salary'] = int(vacance_statistic['average_salary'] /
-                                                  vacance_statistic['vacancies_processed'])
-    return vacance_statistic
+                vacancy_statistic['average_salary'] += rub_salary
+                vacancy_statistic['vacancies_processed'] += 1
+        vacancy_statistic['average_salary'] = int(vacancy_statistic['average_salary'] /
+                                                  vacancy_statistic['vacancies_processed'])
+    return vacancy_statistic

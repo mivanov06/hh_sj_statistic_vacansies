@@ -30,7 +30,7 @@ def hh_predict_rub_salary(vacance):
             return predict_rub_salary(vacance['salary']['from'], vacance['salary']['to'])
 
 
-def hh_get_vacance_statistic(language: str):
+def hh_get_vacancy_statistic(language: str):
     vacancies_found = hh_get_vacancies_count(language)
     pages_count = (vacancies_found // 100) + 1
     if pages_count > 19:
