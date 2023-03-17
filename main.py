@@ -1,14 +1,19 @@
 import os
 from dotenv import load_dotenv
+import logging
 
 from hh_statistic import hh_get_vacancy_statistic
 from sj_statistic import sj_get_vacancy_statistic
 from job_statistic_func import get_table
 
+logger = logging.getLogger(__file__)
 
 if __name__ == "__main__":
     load_dotenv()
-    languages = ['Python', 'Java', 'C++', 'C#', 'C', 'PHP', 'Go', 'Ruby', 'JavaScript', 'TypeScript']
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    logger.setLevel(logging.INFO)
+    languages = ['Python']
+    # languages = ['Python', 'Java', 'C++', 'C#', 'C', 'PHP', 'Go', 'Ruby', 'JavaScript', 'TypeScript']
     sj_key = os.getenv('SJ_SECRET_KEY')
     hh_salary_ranges, sj_salary_ranges = [], []
     table_lines = [

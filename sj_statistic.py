@@ -1,9 +1,10 @@
-import requests
 import logging
-
+import requests
 from itertools import count
 
 from job_statistic_func import predict_rub_salary
+
+logger = logging.getLogger(__file__)
 
 
 def sj_get_vacancies(text: str, secret_key: str, page: int = 0, per_page: int = 100, period: int = 30) -> list:
@@ -36,13 +37,12 @@ def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | 
         'average_salary': 0,
         'total': 0
     }
-    logging.basicConfig(level=logging.INFO, format="%(message)s")
-    logging.info(f'{language}. Calculation of vacancies for SuperJob')
+    logger.info(f'{language}. Calculation of vacancies for SuperJob')
     for page in count(0):
         try:
             vacancies_page = sj_get_vacancies(language, secret_key, page, 100)
         except requests.exceptions.HTTPError:
-            logging.error(f'Page {page} not found')
+            logger.error(f'Page {page} not found')
         if page > (vacancies_page['total'] // 100):
             break
         vacancies = vacancies_page['objects']
