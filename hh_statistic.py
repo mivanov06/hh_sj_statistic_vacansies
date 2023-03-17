@@ -9,10 +9,10 @@ logger = logging.getLogger(__file__)
 
 def hh_get_vacancies(text: str, page: int = 0, per_page: int = 100, period: int = 30) -> list:
     api_url = 'https://api.hh.ru/vacancies'
-    MOSCOW = 1
+    moscow_id = 1
     params = {
         'text': f'Программист {text}',
-        'area': MOSCOW,
+        'area': moscow_id,
         'page': page,
         'per_page': per_page,
         'period': period
