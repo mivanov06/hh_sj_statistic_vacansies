@@ -52,7 +52,7 @@ def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | 
                 vacancies_statistic['average_salary'] += rub_salary
                 vacancies_statistic['vacancies_processed'] += 1
     vacancies_statistic['vacancies_found'] = vacancies_page['total']
-    if vacancies_statistic['vacancies_processed'] is not None:
+    if vacancies_statistic['vacancies_processed']:
         vacancies_statistic['average_salary'] = int(vacancies_statistic['average_salary'] /
                                                     vacancies_statistic['vacancies_processed'])
     return vacancies_statistic
