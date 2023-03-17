@@ -22,9 +22,8 @@ def hh_get_vacancies(text: str, page: int = 0, per_page: int = 100, period: int 
 
 
 def hh_predict_rub_salary(vacancy):
-    if vacancy['salary']:
-        if vacancy['salary']['currency'] == 'RUR':
-            return predict_rub_salary(vacancy['salary']['from'], vacancy['salary']['to'])
+    if vacancy['salary'] and vacancy['salary']['currency'] == 'RUR':
+        return predict_rub_salary(vacancy['salary']['from'], vacancy['salary']['to'])
 
 
 def hh_get_vacancy_statistic(language: str) -> dict[str, int | str]:
@@ -46,11 +45,9 @@ def hh_get_vacancy_statistic(language: str) -> dict[str, int | str]:
             break
         vacancies = vacancies_page['items']
         for vacancy in vacancies:
-            if vacancy['salary']:
-                rub_salary = hh_predict_rub_salary(vacancy)
-                if rub_salary:
-                    vacancy_statistic['average_salary'] += rub_salary
-                    vacancy_statistic['vacancies_processed'] += 1
+            if vacancy['salary'] and hh_predict_rub_salary(vacancy):
+                vacancy_statistic['average_salary'] += hh_predict_rub_salary(vacancy)
+                vacancy_statistic['vacancies_processed'] += 1
     try:
         vacancy_statistic['average_salary'] = int(vacancy_statistic['average_salary'] /
                                                   vacancy_statistic['vacancies_processed'])

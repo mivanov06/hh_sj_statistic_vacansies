@@ -1,8 +1,6 @@
 import logging
 from itertools import count
-
 import requests
-from progress.spinner import Spinner
 
 from job_statistic_func import predict_rub_salary
 
