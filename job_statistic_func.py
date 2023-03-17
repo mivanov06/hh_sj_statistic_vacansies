@@ -10,7 +10,7 @@ def predict_rub_salary(salary_from: int, salary_to: int = None) -> int:
         return int(salary_to * 0.8)
 
 
-def print_table(table_content, table_row, title):
+def get_table(table_content, table_row, title):
     for row in table_content:
         table_row.append(
             [
@@ -21,6 +21,4 @@ def print_table(table_content, table_row, title):
 
             ]
         )
-    table_instance = AsciiTable(table_row, title)
-    print(table_instance.table)
-
+    return AsciiTable(table_row, title).table

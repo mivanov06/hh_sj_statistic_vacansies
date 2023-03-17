@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 from hh_statistic import hh_get_vacancy_statistic
 from sj_statistic import sj_get_vacancy_statistic
-from job_statistic_func import print_table
+from job_statistic_func import get_table
 
 
 if __name__ == "__main__":
@@ -17,5 +17,5 @@ if __name__ == "__main__":
     for language in languages:
         hh_salary_ranges.append(hh_get_vacancy_statistic(language))
         sj_salary_ranges.append(sj_get_vacancy_statistic(language, sj_key))
-    print_table(hh_salary_ranges, table_lines.copy(), 'Статистика HeadHunter')
-    print_table(sj_salary_ranges, table_lines.copy(), 'Статистика SuperJob')
+    print(get_table(hh_salary_ranges, table_lines.copy(), 'Статистика HeadHunter'))
+    print(get_table(sj_salary_ranges, table_lines.copy(), 'Статистика SuperJob'))
