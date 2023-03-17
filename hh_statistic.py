@@ -1,20 +1,17 @@
+from itertools import count
+
 import requests
-from progress.bar import IncrementalBar as Bar
-from requests import exceptions
+import logging
 
 from job_statistic_func import predict_rub_salary
 
 
-def hh_get_vacancies_count(text: str) -> int:
-    response = hh_get_vacancies(text, per_page=1)
-    return response['found']
-
-
 def hh_get_vacancies(text: str, page: int = 0, per_page: int = 100, period: int = 30) -> list:
     api_url = 'https://api.hh.ru/vacancies'
+    MOSCOW = 1
     params = {
         'text': f'Программист {text}',
-        'area': 1,
+        'area': MOSCOW,
         'page': page,
         'per_page': per_page,
         'period': period
@@ -30,32 +27,33 @@ def hh_predict_rub_salary(vacance):
             return predict_rub_salary(vacance['salary']['from'], vacance['salary']['to'])
 
 
-def hh_get_vacancy_statistic(language: str):
-    vacancies_found = hh_get_vacancies_count(language)
-    pages_count = (vacancies_found // 100) + 1
-    if pages_count > 19:
-        pages_count = 19
-    bar = Bar(f'for HH [{language}]: Counting in progress', max=vacancies_found)
-    vacance_statistic = {
+def hh_get_vacancy_statistic(language: str) -> dict[str, int | str]:
+    vacancy_statistic = {
         'language': language,
-        'vacancies_found': vacancies_found,
         'vacancies_processed': 0,
         'average_salary': 0
     }
-    for page in range(pages_count + 1):
+    logging.basicConfig(level=logging.INFO,  format="%(message)s")
+    logging.info(f'{language}. Calculation of vacancies for HeadHunter')
+    for page in count(0):
         try:
-            vacancies = hh_get_vacancies(language, page)['items']
-        except exceptions.HTTPError:
-            print(f' Страница {page} не найдена')
-        for vacance in vacancies:
-            if vacance['salary']:
-                rub_salary = hh_predict_rub_salary(vacance)
+            vacancies_page = hh_get_vacancies(language, page, 100)
+        except requests.exceptions.HTTPError:
+            logging.error(f'Page {page} not found')
+        if vacancies_page['found']:
+            vacancy_statistic['vacancies_found'] = vacancies_page['found']
+        if page > (vacancy_statistic['vacancies_found'] // 100):
+            break
+        vacancies = vacancies_page['items']
+        for vacancy in vacancies:
+            if vacancy['salary']:
+                rub_salary = hh_predict_rub_salary(vacancy)
                 if rub_salary:
-                    vacance_statistic['average_salary'] += rub_salary
-                    vacance_statistic['vacancies_processed'] += 1
-            bar.next()
-    bar.finish()
-    if vacance_statistic['vacancies_processed'] != 0:
-        vacance_statistic['average_salary'] = int(vacance_statistic['average_salary'] /
-                                                  vacance_statistic['vacancies_processed'])
-    return vacance_statistic
+                    vacancy_statistic['average_salary'] += rub_salary
+                    vacancy_statistic['vacancies_processed'] += 1
+    try:
+        vacancy_statistic['average_salary'] = int(vacancy_statistic['average_salary'] /
+                                                  vacancy_statistic['vacancies_processed'])
+    except ZeroDivisionError:
+        vacancy_statistic['average_salary'] = 0
+    return vacancy_statistic

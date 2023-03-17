@@ -1,6 +1,8 @@
+import logging
 from itertools import count
+
 import requests
-from requests import exceptions
+from progress.spinner import Spinner
 
 from job_statistic_func import predict_rub_salary
 
@@ -33,15 +35,16 @@ def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | 
         'vacancies_processed': 0,
         'average_salary': 0
     }
+    logging.basicConfig(level=logging.INFO,  format="%(message)s")
+    logging.info(f'{language}. Calculation of vacancies for SuperJob')
     for page in count(0):
         try:
             vacancies_page = sj_get_vacancies(language, secret_key, page, 100)
-        except exceptions.HTTPError:
-            print(f' Страница {page} не найдена')
-            continue
+        except requests.exceptions.HTTPError:
+            logging.error(f'Page {page} not found')
         if vacancies_page['total']:
             vacancy_statistic['vacancies_found'] = vacancies_page['total']
-        if page >= (vacancy_statistic['vacancies_found'] // 100):
+        if page > (vacancy_statistic['vacancies_found'] // 100):
             break
         vacancies = vacancies_page['objects']
         for vacancy in vacancies:
@@ -49,6 +52,9 @@ def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | 
             if rub_salary:
                 vacancy_statistic['average_salary'] += rub_salary
                 vacancy_statistic['vacancies_processed'] += 1
+    try:
         vacancy_statistic['average_salary'] = int(vacancy_statistic['average_salary'] /
                                                   vacancy_statistic['vacancies_processed'])
+    except ZeroDivisionError:
+        vacancy_statistic['average_salary'] = 0
     return vacancy_statistic
