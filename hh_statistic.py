@@ -1,7 +1,7 @@
-from itertools import count
-
 import requests
 import logging
+
+from itertools import count
 
 from job_statistic_func import predict_rub_salary
 
@@ -27,29 +27,29 @@ def hh_predict_rub_salary(vacancy):
 
 
 def hh_get_vacancy_statistic(language: str) -> dict[str, int | str]:
-    vacancy_statistic = {
+    vacancies_statistic = {
         'language': language,
         'vacancies_processed': 0,
-        'average_salary': 0
+        'average_salary': 0,
+        'total': 0
     }
-    logging.basicConfig(level=logging.INFO,  format="%(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     logging.info(f'{language}. Calculation of vacancies for HeadHunter')
     for page in count(0):
         try:
             vacancies_page = hh_get_vacancies(language, page, 100)
         except requests.exceptions.HTTPError:
             logging.error(f'Page {page} not found')
-        if vacancies_page['found']:
-            vacancy_statistic['vacancies_found'] = vacancies_page['found']
-        if page > (vacancy_statistic['vacancies_found'] // 100):
+        if page > (vacancies_page['found'] // 100):
             break
         vacancies = vacancies_page['items']
         for vacancy in vacancies:
             rub_salary = hh_predict_rub_salary(vacancy)
             if rub_salary:
-                vacancy_statistic['average_salary'] += rub_salary
-                vacancy_statistic['vacancies_processed'] += 1
-    if vacancy_statistic['vacancies_processed'] is not None:
-        vacancy_statistic['average_salary'] = int(vacancy_statistic['average_salary'] /
-                                                  vacancy_statistic['vacancies_processed'])
-    return vacancy_statistic
+                vacancies_statistic['average_salary'] += rub_salary
+                vacancies_statistic['vacancies_processed'] += 1
+    vacancies_statistic['vacancies_found'] = vacancies_page['found']
+    if vacancies_statistic['vacancies_processed'] is not None:
+        vacancies_statistic['average_salary'] = int(vacancies_statistic['average_salary'] /
+                                                    vacancies_statistic['vacancies_processed'])
+    return vacancies_statistic
