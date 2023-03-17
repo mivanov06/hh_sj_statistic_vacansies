@@ -45,12 +45,11 @@ def hh_get_vacancy_statistic(language: str) -> dict[str, int | str]:
             break
         vacancies = vacancies_page['items']
         for vacancy in vacancies:
-            if vacancy['salary'] and hh_predict_rub_salary(vacancy):
-                vacancy_statistic['average_salary'] += hh_predict_rub_salary(vacancy)
+            rub_salary = hh_predict_rub_salary(vacancy)
+            if rub_salary:
+                vacancy_statistic['average_salary'] += rub_salary
                 vacancy_statistic['vacancies_processed'] += 1
-    try:
+    if vacancy_statistic['vacancies_processed'] is not None:
         vacancy_statistic['average_salary'] = int(vacancy_statistic['average_salary'] /
                                                   vacancy_statistic['vacancies_processed'])
-    except ZeroDivisionError:
-        vacancy_statistic['average_salary'] = 0
     return vacancy_statistic

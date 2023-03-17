@@ -7,6 +7,7 @@ from job_statistic_func import predict_rub_salary
 
 def sj_get_vacancies(text: str, secret_key: str, page: int = 0, per_page: int = 100, period: int = 30) -> list:
     api_url = 'https://api.superjob.ru/2.0/vacancies/'
+    town = 'Москва'
     headers = {
         'X-Api-App-Id': secret_key
     }
@@ -14,7 +15,7 @@ def sj_get_vacancies(text: str, secret_key: str, page: int = 0, per_page: int = 
         'page': page,
         'count': per_page,
         'keyword': f'программист {text}',
-        'town': 'Москва',
+        'town': town,
         'period': period
     }
     response = requests.get(api_url, headers=headers, params=params)
@@ -33,7 +34,7 @@ def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | 
         'vacancies_processed': 0,
         'average_salary': 0
     }
-    logging.basicConfig(level=logging.INFO,  format="%(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     logging.info(f'{language}. Calculation of vacancies for SuperJob')
     for page in count(0):
         try:
@@ -50,9 +51,7 @@ def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | 
             if rub_salary:
                 vacancy_statistic['average_salary'] += rub_salary
                 vacancy_statistic['vacancies_processed'] += 1
-    try:
-        vacancy_statistic['average_salary'] = int(vacancy_statistic['average_salary'] /
-                                                  vacancy_statistic['vacancies_processed'])
-    except ZeroDivisionError:
-        vacancy_statistic['average_salary'] = 0
+    if vacancy_statistic['vacancies_processed'] is not None:
+        vacancy_statistic['average_salary'] = int(vacancy_statistic['average_salary']
+                                                  / vacancy_statistic['vacancies_processed'])
     return vacancy_statistic
