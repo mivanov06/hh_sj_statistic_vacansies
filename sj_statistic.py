@@ -24,9 +24,9 @@ def sj_get_vacancies(text: str, secret_key: str, page: int = 0, per_page: int = 
     return response.json()
 
 
-def sj_predict_rub_salary(vacance) -> int:
-    if vacance['currency'] and vacance['currency'] == 'rub':
-        return predict_rub_salary(vacance['payment_from'], vacance['payment_to'])
+def sj_predict_rub_salary(vacancy) -> int:
+    if vacancy['currency'] and vacancy['currency'] == 'rub':
+        return predict_rub_salary(vacancy['payment_from'], vacancy['payment_to'])
 
 
 def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | str]:
