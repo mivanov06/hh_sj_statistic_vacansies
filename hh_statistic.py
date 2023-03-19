@@ -31,8 +31,7 @@ def hh_get_vacancy_statistic(language: str) -> dict[str, int | str]:
     vacancies_statistic = {
         'language': language,
         'vacancies_processed': 0,
-        'average_salary': 0,
-        'total': 0
+        'average_salary': 0
     }
     logger.info(f'{language}. Calculation of vacancies for HeadHunter')
     for page in count(0):

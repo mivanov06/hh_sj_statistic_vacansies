@@ -34,8 +34,7 @@ def sj_get_vacancy_statistic(language: str, secret_key: str) -> dict[str, int | 
     vacancies_statistic = {
         'language': language,
         'vacancies_processed': 0,
-        'average_salary': 0,
-        'total': 0
+        'average_salary': 0
     }
     logger.info(f'{language}. Calculation of vacancies for SuperJob')
     for page in count(0):
